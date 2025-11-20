@@ -85,6 +85,20 @@ python main.py --format both
 python main.py --output results
 ```
 
+### 使用例を実行
+
+ツールの基本的な使い方を学ぶには：
+
+```bash
+python example.py
+```
+
+このスクリプトは以下の例を実行します：
+- 基本的な使い方
+- 複数のURLを一括チェック
+- カスタムパターンでの検出
+- CSVからの読み込み
+
 ## オプション一覧
 
 | オプション | 説明 | デフォルト |
@@ -153,12 +167,16 @@ python main.py --output results
 
 ```
 .
-├── main.py                 # メインスクリプト
-├── hospital_fetcher.py     # 病院データ取得モジュール
-├── ads_detector.py         # Google広告検出モジュール
-├── requirements.txt        # 依存パッケージ一覧
-├── README.md              # このファイル
-└── output/                # 出力ディレクトリ（自動生成）
+├── main.py                  # メインスクリプト
+├── hospital_fetcher.py      # 病院データ取得モジュール
+├── ads_detector.py          # Google広告検出モジュール
+├── example.py               # 使用例スクリプト
+├── requirements.txt         # 依存パッケージ一覧
+├── sample_hospitals.csv     # サンプル病院データ
+├── setup.sh                 # セットアップスクリプト
+├── run_sample.sh            # サンプル実行スクリプト
+├── README.md                # このファイル
+└── output/                  # 出力ディレクトリ（自動生成）
 ```
 
 ## 開発
