@@ -4,18 +4,28 @@
 
 ## 機能
 
-- 📋 病院データの取得（CSVファイル、サンプルデータ対応）
-- 🔍 WebサイトでのGoogle広告使用状況の自動検出
-- 🎯 複数の広告タイプを識別（Google Ads、Google Tag Manager、コンバージョントラッキング、リマーケティング）
-- 📊 CSV/JSON形式での結果出力
+- 📋 100件の実在病院データ自動生成
+- 🔍 WebサイトでのGoogle広告使用状況の正確な検出
+- 🎯 実際の広告配信のみを検出（GTM/Analyticsは参考情報として記録）
+- 📊 CSV/JSON形式での詳細レポート出力
 - ⚡ Seleniumによる詳細検出モード / Requestsによる高速モード
 
-## 検出できる広告タイプ
+## 検出精度について
 
-- **Google Ads Script**: 一般的なGoogle広告スクリプト
-- **Google Tag Manager**: GTMタグ
-- **Conversion Tracking**: コンバージョントラッキング
-- **Remarketing**: リマーケティングタグ
+### ✅ 実際のGoogle広告として検出するもの
+
+- **Google AdSense**: `googlesyndication.com`, `adsbygoogle`
+- **DoubleClick広告**: `googleads.g.doubleclick.net`
+- **広告サービス**: `adservice.google.com`, `google.com/adsense`
+- **コンバージョントラッキング**: `googleadservices.com/pagead/conversion`
+- **リマーケティング**: `googleadservices.com/pagead/viewthroughconversion`
+
+### 📝 参考情報として記録するもの（広告とは判定しない）
+
+- **Google Tag Manager**: タグ管理ツール（広告配信ツールではない）
+- **Google Analytics**: アクセス解析ツール
+
+**重要**: Google Tag Managerがあるからといって、必ずしもGoogle広告を使っているわけではありません。GTMは様々なタグ（Analytics、広告、その他）を管理するツールです。このツールは実際の広告配信パターンのみを検出します。
 
 ## インストール
 

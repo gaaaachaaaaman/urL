@@ -123,13 +123,18 @@ def main():
             else:
                 detection_result = detector.detect(website)
 
+                # 広告タイプと参考情報を整形
+                ad_types_str = ', '.join(detection_result['ad_types']) if detection_result['ad_types'] else ''
+                reference_info_str = ', '.join(detection_result.get('reference_info', []))
+
                 result = {
                     'name': hospital.get('name', ''),
                     'address': hospital.get('address', ''),
                     'phone': hospital.get('phone', ''),
                     'website': detection_result['url'],
                     'has_google_ads': detection_result['has_google_ads'],
-                    'ad_types': ', '.join(detection_result['ad_types']),
+                    'ad_types': ad_types_str,
+                    'reference_info': reference_info_str,
                     'detected_scripts': detection_result.get('detected_scripts', []),
                     'error': detection_result.get('error', '')
                 }
@@ -172,6 +177,7 @@ def main():
             'WebサイトURL': r['website'],
             'Google広告使用': 'あり' if r['has_google_ads'] else 'なし',
             '広告タイプ': r['ad_types'],
+            '参考情報（GTM/GA）': r.get('reference_info', ''),
             'エラー': r['error']
         } for r in results])
 

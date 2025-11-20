@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Google広告検出モジュール
-WebサイトでGoogle広告が使用されているかを検出します
+Google広告検出モジュール（改善版）
+WebサイトでGoogle広告が使用されているかを正確に検出します
+
+重要: Google Tag Manager（GTM）やGoogle Analyticsの存在だけでは
+「Google広告使用」とは判定しません。実際の広告配信を示すパターンのみを検出します。
 """
 
 import requests
@@ -16,7 +19,7 @@ from typing import Dict, List
 
 
 class GoogleAdsDetector:
-    """Google広告を検出するクラス"""
+    """Google広告を検出するクラス（改善版）"""
 
     def __init__(self, use_selenium: bool = True):
         """
@@ -26,28 +29,38 @@ class GoogleAdsDetector:
         self.use_selenium = use_selenium
         self.driver = None
 
-        # Google広告関連のパターン
-        self.ad_patterns = {
-            'google_ads_script': [
-                r'googleads\.g\.doubleclick\.net',
-                r'googlesyndication\.com',
-                r'adservice\.google\.com',
-                r'google\.com/adsense',
-                r'googleadservices\.com',
-                r'google-analytics\.com/.*gtag',
-            ],
+        # 実際のGoogle広告配信を示すパターン
+        self.google_ads_patterns = [
+            r'googlesyndication\.com',  # AdSense
+            r'pagead2\.googlesyndication\.com',  # AdSense配信
+            r'googleads\.g\.doubleclick\.net',  # DoubleClick広告
+            r'adservice\.google\.com',  # 広告サービス
+            r'google\.com/adsense',  # AdSense
+            r'adsbygoogle',  # 広告ユニット（最も確実）
+            r'google\.com/pagead/show',  # 広告表示
+        ]
+
+        # コンバージョントラッキング（広告使用の補助的証拠）
+        self.conversion_patterns = [
+            r'googleadservices\.com/pagead/conversion',
+            r'google\.com/pagead/conversion',
+        ]
+
+        # リマーケティング（広告使用の補助的証拠）
+        self.remarketing_patterns = [
+            r'googleadservices\.com/pagead/viewthroughconversion',
+        ]
+
+        # 参考情報（これらだけでは広告使用とは判定しない）
+        self.reference_patterns = {
             'google_tag_manager': [
                 r'googletagmanager\.com/gtag',
                 r'googletagmanager\.com/gtm\.js',
             ],
-            'conversion_tracking': [
-                r'google-analytics\.com/collect',
-                r'google\.com/pagead/conversion',
-                r'googleadservices\.com/pagead/conversion',
+            'google_analytics': [
+                r'google-analytics\.com',
+                r'googletagmanager\.com/gtag.*analytics',
             ],
-            'remarketing': [
-                r'googleadservices\.com/pagead/viewthroughconversion',
-            ]
         }
 
     def setup_driver(self):
@@ -88,6 +101,7 @@ class GoogleAdsDetector:
             'url': url,
             'has_google_ads': False,
             'ad_types': [],
+            'reference_info': [],
             'detected_scripts': [],
             'error': None
         }
@@ -116,15 +130,34 @@ class GoogleAdsDetector:
                 if script.string:
                     html_content += script.string
 
-            # パターンマッチング
-            for ad_type, patterns in self.ad_patterns.items():
+            # 1. 実際のGoogle広告を検出
+            for pattern in self.google_ads_patterns:
+                if re.search(pattern, html_content, re.IGNORECASE):
+                    result['has_google_ads'] = True
+                    if 'google_ads' not in result['ad_types']:
+                        result['ad_types'].append('google_ads')
+                    break
+
+            # 2. コンバージョントラッキングを検出
+            for pattern in self.conversion_patterns:
+                if re.search(pattern, html_content, re.IGNORECASE):
+                    if 'conversion_tracking' not in result['ad_types']:
+                        result['ad_types'].append('conversion_tracking')
+
+            # 3. リマーケティングを検出
+            for pattern in self.remarketing_patterns:
+                if re.search(pattern, html_content, re.IGNORECASE):
+                    if 'remarketing' not in result['ad_types']:
+                        result['ad_types'].append('remarketing')
+
+            # 4. 参考情報を記録（これらは広告使用の判定には使わない）
+            for ref_type, patterns in self.reference_patterns.items():
                 for pattern in patterns:
                     if re.search(pattern, html_content, re.IGNORECASE):
-                        result['has_google_ads'] = True
-                        if ad_type not in result['ad_types']:
-                            result['ad_types'].append(ad_type)
+                        if ref_type not in result['reference_info']:
+                            result['reference_info'].append(ref_type)
 
-            # Google Adsの一般的な要素をチェック
+            # 5. Google Adsの広告要素を検出（最も確実な証拠）
             ad_elements = [
                 soup.find_all('ins', class_=re.compile('adsbygoogle')),
                 soup.find_all('div', attrs={'data-ad-client': True}),
@@ -134,8 +167,8 @@ class GoogleAdsDetector:
             for elements in ad_elements:
                 if elements:
                     result['has_google_ads'] = True
-                    if 'google_ads_display' not in result['ad_types']:
-                        result['ad_types'].append('google_ads_display')
+                    if 'google_ads' not in result['ad_types']:
+                        result['ad_types'].append('google_ads')
                     break
 
         except requests.RequestException as e:
@@ -159,6 +192,7 @@ class GoogleAdsDetector:
             'url': url,
             'has_google_ads': False,
             'ad_types': [],
+            'reference_info': [],
             'detected_scripts': [],
             'network_requests': [],
             'error': None
@@ -177,16 +211,34 @@ class GoogleAdsDetector:
             # ページソースを取得
             page_source = self.driver.page_source
 
-            # パターンマッチング
-            for ad_type, patterns in self.ad_patterns.items():
+            # 1. 実際のGoogle広告を検出
+            for pattern in self.google_ads_patterns:
+                if re.search(pattern, page_source, re.IGNORECASE):
+                    result['has_google_ads'] = True
+                    if 'google_ads' not in result['ad_types']:
+                        result['ad_types'].append('google_ads')
+                    break
+
+            # 2. コンバージョントラッキングを検出
+            for pattern in self.conversion_patterns:
+                if re.search(pattern, page_source, re.IGNORECASE):
+                    if 'conversion_tracking' not in result['ad_types']:
+                        result['ad_types'].append('conversion_tracking')
+
+            # 3. リマーケティングを検出
+            for pattern in self.remarketing_patterns:
+                if re.search(pattern, page_source, re.IGNORECASE):
+                    if 'remarketing' not in result['ad_types']:
+                        result['ad_types'].append('remarketing')
+
+            # 4. 参考情報を記録
+            for ref_type, patterns in self.reference_patterns.items():
                 for pattern in patterns:
                     if re.search(pattern, page_source, re.IGNORECASE):
-                        result['has_google_ads'] = True
-                        if ad_type not in result['ad_types']:
-                            result['ad_types'].append(ad_type)
+                        if ref_type not in result['reference_info']:
+                            result['reference_info'].append(ref_type)
 
             # JavaScriptでネットワークリクエストをチェック
-            # Performance APIを使用
             try:
                 performance_entries = self.driver.execute_script(
                     "return performance.getEntriesByType('resource').map(e => e.name);"
@@ -194,22 +246,43 @@ class GoogleAdsDetector:
 
                 for entry in performance_entries:
                     result['network_requests'].append(entry)
-                    for ad_type, patterns in self.ad_patterns.items():
+
+                    # 実際のGoogle広告を検出
+                    for pattern in self.google_ads_patterns:
+                        if re.search(pattern, entry, re.IGNORECASE):
+                            result['has_google_ads'] = True
+                            if 'google_ads' not in result['ad_types']:
+                                result['ad_types'].append('google_ads')
+                            break
+
+                    # コンバージョントラッキング
+                    for pattern in self.conversion_patterns:
+                        if re.search(pattern, entry, re.IGNORECASE):
+                            if 'conversion_tracking' not in result['ad_types']:
+                                result['ad_types'].append('conversion_tracking')
+
+                    # リマーケティング
+                    for pattern in self.remarketing_patterns:
+                        if re.search(pattern, entry, re.IGNORECASE):
+                            if 'remarketing' not in result['ad_types']:
+                                result['ad_types'].append('remarketing')
+
+                    # 参考情報
+                    for ref_type, patterns in self.reference_patterns.items():
                         for pattern in patterns:
                             if re.search(pattern, entry, re.IGNORECASE):
-                                result['has_google_ads'] = True
-                                if ad_type not in result['ad_types']:
-                                    result['ad_types'].append(ad_type)
+                                if ref_type not in result['reference_info']:
+                                    result['reference_info'].append(ref_type)
 
             except Exception as e:
                 print("Performance API エラー: {}".format(str(e)))
 
-            # Google Ads要素をチェック
+            # Google Ads広告要素をチェック（最も確実）
             ad_elements = self.driver.find_elements('css selector', 'ins.adsbygoogle')
             if ad_elements:
                 result['has_google_ads'] = True
-                if 'google_ads_display' not in result['ad_types']:
-                    result['ad_types'].append('google_ads_display')
+                if 'google_ads' not in result['ad_types']:
+                    result['ad_types'].append('google_ads')
 
         except Exception as e:
             result['error'] = "Seleniumエラー: {}".format(str(e))
@@ -231,6 +304,7 @@ class GoogleAdsDetector:
                 'url': url,
                 'has_google_ads': False,
                 'ad_types': [],
+                'reference_info': [],
                 'detected_scripts': [],
                 'error': '無効なURL'
             }
@@ -257,7 +331,7 @@ class GoogleAdsDetector:
                 self.setup_driver()
 
             for i, url in enumerate(urls):
-                print("[{i+1}/{len(urls)}] チェック中: {}".format(url))
+                print("[{}/{}] チェック中: {}".format(i+1, len(urls), url))
                 result = self.detect(url)
                 results.append(result)
                 time.sleep(1)  # レート制限対策
