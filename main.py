@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 病院サイトURL取得 & Google広告検出ツール
 
