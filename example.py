@@ -22,7 +22,7 @@ def example_basic():
     fetcher = HospitalFetcher()
     hospitals = fetcher.create_sample_data()
 
-    print(f"取得した病院数: {len(hospitals)}")
+    print("取得した病院数: {}".format(len(hospitals)))
     print()
 
     # Google広告検出器を初期化
@@ -30,16 +30,16 @@ def example_basic():
 
     # 最初の病院のみテスト
     hospital = hospitals[0]
-    print(f"検査対象: {hospital['name']}")
-    print(f"URL: {hospital['website']}")
+    print("検査対象: {}".format(hospital['name']))
+    print("URL: {}".format(hospital['website']))
     print()
 
     # Google広告を検出
     result = detector.detect(hospital['website'])
 
     print("検出結果:")
-    print(f"  Google広告使用: {'あり' if result['has_google_ads'] else 'なし'}")
-    print(f"  広告タイプ: {', '.join(result['ad_types']) if result['ad_types'] else 'なし'}")
+    print("  Google広告使用: {}".format('あり' if result['has_google_ads'] else 'なし'))
+    print("  広告タイプ: {}".format(', '.join(result['ad_types']) if result['ad_types'] else 'なし'))
     print()
 
 
@@ -65,12 +65,12 @@ def example_batch():
 
     # 結果を表示
     for result in results:
-        print(f"URL: {result['url']}")
-        print(f"  Google広告: {'あり' if result['has_google_ads'] else 'なし'}")
+        print("URL: {}".format(result['url']))
+        print("  Google広告: {}".format('あり' if result['has_google_ads'] else 'なし'))
         if result['ad_types']:
-            print(f"  タイプ: {', '.join(result['ad_types'])}")
+            print("  タイプ: {}".format(', '.join(result['ad_types'])))
         if result['error']:
-            print(f"  エラー: {result['error']}")
+            print("  エラー: {}".format(result['error']))
         print()
 
 
@@ -94,8 +94,8 @@ def example_custom():
 
     result = detector.detect(url)
 
-    print(f"URL: {url}")
-    print(f"検出された広告タイプ: {', '.join(result['ad_types']) if result['ad_types'] else 'なし'}")
+    print("URL: {}".format(url))
+    print("検出された広告タイプ: {}".format(', '.join(result['ad_types']) if result['ad_types'] else 'なし'))
     print()
 
 
@@ -112,12 +112,12 @@ def example_csv():
     hospitals = fetcher.fetch_from_csv('sample_hospitals.csv')
 
     if hospitals:
-        print(f"読み込んだ病院数: {len(hospitals)}")
+        print("読み込んだ病院数: {}".format(len(hospitals)))
         print()
         print("最初の3件:")
         for i, hospital in enumerate(hospitals[:3], 1):
-            print(f"{i}. {hospital['name']}")
-            print(f"   URL: {hospital['website']}")
+            print("{i}. {}".format(hospital['name']))
+            print("   URL: {}".format(hospital['website']))
         print()
     else:
         print("CSVファイルが見つかりません")

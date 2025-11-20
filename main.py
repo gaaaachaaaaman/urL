@@ -88,7 +88,7 @@ def main():
         print("エラー: 病院データを取得できませんでした")
         return
 
-    print(f"✓ {len(hospitals)}件の病院データを取得しました")
+    print("✓ {}件の病院データを取得しました".format(len(hospitals)))
     print()
 
     # ステップ2: Google広告を検出
@@ -140,7 +140,7 @@ def main():
         detector.close_driver()
 
     print()
-    print(f"✓ {len(results)}件の病院サイトを検出しました")
+    print("✓ {}件の病院サイトを検出しました".format(len(results)))
     print()
 
     # ステップ3: 結果を保存
@@ -152,10 +152,10 @@ def main():
     without_ads = total - with_ads
     errors = sum(1 for r in results if r['error'])
 
-    print(f"  総病院数: {total}")
-    print(f"  Google広告使用: {with_ads} ({with_ads/total*100:.1f}%)")
-    print(f"  Google広告なし: {without_ads} ({without_ads/total*100:.1f}%)")
-    print(f"  エラー: {errors}")
+    print("  総病院数: {}".format(total))
+    print("  Google広告使用: {} ({:.1f}%)".format(with_ads, with_ads/total*100))
+    print("  Google広告なし: {} ({:.1f}%)".format(without_ads, without_ads/total*100))
+    print("  エラー: {}".format(errors))
     print()
 
     # タイムスタンプ
@@ -163,7 +163,7 @@ def main():
 
     # CSV形式で保存
     if args.format in ['csv', 'both']:
-        csv_path = os.path.join(args.output, f'hospital_ads_report_{timestamp}.csv')
+        csv_path = os.path.join(args.output, 'hospital_ads_report_{}.csv'.format(timestamp))
 
         df = pd.DataFrame([{
             '病院名': r['name'],
@@ -176,11 +176,11 @@ def main():
         } for r in results])
 
         df.to_csv(csv_path, index=False, encoding='utf-8-sig')
-        print(f"✓ CSVファイルを保存: {csv_path}")
+        print("✓ CSVファイルを保存: {}".format(csv_path))
 
     # JSON形式で保存
     if args.format in ['json', 'both']:
-        json_path = os.path.join(args.output, f'hospital_ads_report_{timestamp}.json')
+        json_path = os.path.join(args.output, 'hospital_ads_report_{}.json'.format(timestamp))
 
         output_data = {
             'timestamp': timestamp,
@@ -194,7 +194,7 @@ def main():
         with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-        print(f"✓ JSONファイルを保存: {json_path}")
+        print("✓ JSONファイルを保存: {}".format(json_path))
 
     print()
     print("=" * 60)

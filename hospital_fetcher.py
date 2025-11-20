@@ -53,18 +53,18 @@ class HospitalFetcher:
         CSVファイルから病院データを読み込む
         CSV形式: name,address,phone,website
         """
-        print(f"CSVファイルから病院データを読み込み中: {csv_path}")
+        print("CSVファイルから病院データを読み込み中: {}".format(csv_path))
 
         try:
             df = pd.read_csv(csv_path)
             hospitals = df.to_dict('records')
-            print(f"{len(hospitals)}件の病院データを読み込みました")
+            print("{}件の病院データを読み込みました".format(len(hospitals)))
             return hospitals
         except FileNotFoundError:
-            print(f"エラー: ファイルが見つかりません: {csv_path}")
+            print("エラー: ファイルが見つかりません: {}".format(csv_path))
             return []
         except Exception as e:
-            print(f"エラー: {str(e)}")
+            print("エラー: {}".format(str(e)))
             return []
 
     def search_hospital_websites(self, hospital_name: str, location: str = "") -> str:
@@ -76,7 +76,7 @@ class HospitalFetcher:
         # api_key = os.getenv('GOOGLE_SEARCH_API_KEY')
         # search_engine_id = os.getenv('GOOGLE_SEARCH_ENGINE_ID')
 
-        # search_query = f"{hospital_name} {location} 公式サイト"
+        # search_query = "{hospital_name} {} 公式サイト".format(location)
 
         # 実際の検索API実装はAPIキーが必要
         # ここではプレースホルダーを返す

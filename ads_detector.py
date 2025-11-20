@@ -65,7 +65,7 @@ class GoogleAdsDetector:
                 service = Service(ChromeDriverManager().install())
                 self.driver = webdriver.Chrome(service=service, options=options)
             except Exception as e:
-                print(f"Seleniumドライバーのセットアップエラー: {str(e)}")
+                print("Seleniumドライバーのセットアップエラー: {}".format(str(e)))
                 self.use_selenium = False
 
     def close_driver(self):
@@ -139,9 +139,9 @@ class GoogleAdsDetector:
                     break
 
         except requests.RequestException as e:
-            result['error'] = f"リクエストエラー: {str(e)}"
+            result['error'] = "リクエストエラー: {}".format(str(e))
         except Exception as e:
-            result['error'] = f"エラー: {str(e)}"
+            result['error'] = "エラー: {}".format(str(e))
 
         return result
 
@@ -202,7 +202,7 @@ class GoogleAdsDetector:
                                     result['ad_types'].append(ad_type)
 
             except Exception as e:
-                print(f"Performance API エラー: {str(e)}")
+                print("Performance API エラー: {}".format(str(e)))
 
             # Google Ads要素をチェック
             ad_elements = self.driver.find_elements('css selector', 'ins.adsbygoogle')
@@ -212,7 +212,7 @@ class GoogleAdsDetector:
                     result['ad_types'].append('google_ads_display')
 
         except Exception as e:
-            result['error'] = f"Seleniumエラー: {str(e)}"
+            result['error'] = "Seleniumエラー: {}".format(str(e))
 
         return result
 
@@ -257,7 +257,7 @@ class GoogleAdsDetector:
                 self.setup_driver()
 
             for i, url in enumerate(urls):
-                print(f"[{i+1}/{len(urls)}] チェック中: {url}")
+                print("[{i+1}/{len(urls)}] チェック中: {}".format(url))
                 result = self.detect(url)
                 results.append(result)
                 time.sleep(1)  # レート制限対策
