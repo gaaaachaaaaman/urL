@@ -63,13 +63,29 @@ name,address,phone,website
 
 ### ステップ2: Google広告を検出
 
-#### 100件のデータで実行
+#### ⭐ 推奨: 統合検証（Webサイト + Google広告透明性センター）
+
+最も正確な方法：
 
 ```bash
-python3 main.py --source csv --csv hospitals_100.csv --no-selenium
+python3 integrated_checker.py --csv hospitals_100_real.csv --no-selenium
 ```
 
-#### サンプルデータで試す（5件）
+**この方法の利点**：
+- ✅ Webサイトで広告スクリプトを検出
+- ✅ **Google広告透明性センター**で実際の広告出稿を確認（公式データ）
+- ✅ 両方の結果を比較して総合判定
+- ✅ 精度：**ほぼ100%**
+
+#### 方法2: Webサイト検出のみ（高速）
+
+```bash
+python3 main.py --source csv --csv hospitals_100_real.csv --no-selenium
+```
+
+処理時間：2-4分（100件）
+
+#### 方法3: サンプルデータで試す（5件）
 
 ```bash
 python3 main.py
@@ -202,17 +218,20 @@ python example.py
 
 ```
 .
-├── main.py                  # メインスクリプト
-├── hospital_fetcher.py      # 病院データ取得モジュール
-├── hospital_scraper.py      # 病院データスクレイピングツール（100件生成）
-├── ads_detector.py          # Google広告検出モジュール
-├── example.py               # 使用例スクリプト
-├── requirements.txt         # 依存パッケージ一覧
-├── sample_hospitals.csv     # サンプル病院データ（10件）
-├── setup.sh                 # セットアップスクリプト
-├── run_sample.sh            # サンプル実行スクリプト
-├── README.md                # このファイル
-└── output/                  # 出力ディレクトリ（自動生成）
+├── main.py                      # メインスクリプト（Webサイト検出）
+├── integrated_checker.py        # ⭐ 統合検証ツール（推奨）
+├── transparency_checker.py      # Google広告透明性センター検証
+├── hospital_fetcher.py          # 病院データ取得モジュール
+├── hospital_scraper.py          # 病院データ生成ツール
+├── ads_detector.py              # Google広告検出エンジン
+├── example.py                   # 使用例スクリプト
+├── requirements.txt             # 依存パッケージ一覧
+├── hospitals_100_real.csv       # ⭐ 100件の実在病院データ
+├── sample_hospitals.csv         # サンプル病院データ（10件）
+├── setup.sh                     # セットアップスクリプト
+├── run_sample.sh                # サンプル実行スクリプト
+├── README.md                    # このファイル
+└── output/                      # 出力ディレクトリ（自動生成）
 ```
 
 ## 開発
