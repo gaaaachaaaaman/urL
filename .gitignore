@@ -13,8 +13,10 @@ dist/
 
 # Output files
 output/
-*.csv
-*.json
+output/*.csv
+output/*.json
+hospital_ads_report_*.csv
+hospital_ads_report_*.json
 
 # Environment variables
 .env
