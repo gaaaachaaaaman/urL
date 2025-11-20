@@ -32,12 +32,37 @@ pip install -r requirements.txt
 
 ## 使い方
 
-### 基本的な使用方法
+### ステップ1: 病院データを準備
 
-サンプルデータで試す：
+#### 方法A: 100件のサンプルデータを生成（推奨）
 
 ```bash
-python main.py
+python3 hospital_scraper.py
+```
+
+これで `hospitals_100.csv` が生成されます（40件の実在病院 + 60件のサンプル）。
+
+#### 方法B: 自分でCSVファイルを作成
+
+`your_hospitals.csv` を以下の形式で作成：
+
+```csv
+name,address,phone,website
+東京大学医学部附属病院,東京都文京区本郷7-3-1,03-3815-5411,https://www.h.u-tokyo.ac.jp/
+```
+
+### ステップ2: Google広告を検出
+
+#### 100件のデータで実行
+
+```bash
+python3 main.py --source csv --csv hospitals_100.csv --no-selenium
+```
+
+#### サンプルデータで試す（5件）
+
+```bash
+python3 main.py
 ```
 
 ### CSVファイルから病院データを読み込む
@@ -169,10 +194,11 @@ python example.py
 .
 ├── main.py                  # メインスクリプト
 ├── hospital_fetcher.py      # 病院データ取得モジュール
+├── hospital_scraper.py      # 病院データスクレイピングツール（100件生成）
 ├── ads_detector.py          # Google広告検出モジュール
 ├── example.py               # 使用例スクリプト
 ├── requirements.txt         # 依存パッケージ一覧
-├── sample_hospitals.csv     # サンプル病院データ
+├── sample_hospitals.csv     # サンプル病院データ（10件）
 ├── setup.sh                 # セットアップスクリプト
 ├── run_sample.sh            # サンプル実行スクリプト
 ├── README.md                # このファイル
