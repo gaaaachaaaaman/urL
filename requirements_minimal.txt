@@ -1,0 +1,12 @@
+# 最小限の依存パッケージ（古い環境向け）
+requests>=2.18.0
+beautifulsoup4>=4.6.0
+lxml>=4.2.0
+tqdm>=4.30.0
+
+# CSV出力にpandasを使わない場合は不要
+# pandas>=0.20.0
+
+# Seleniumモード使用時のみ必要
+# selenium>=3.8.0
+# webdriver-manager>=2.5.0
